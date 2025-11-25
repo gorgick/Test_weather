@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cities</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'details:index' %}"><strong>To look for a temperature</strong></a>
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</nav>
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            {% for city in cities %}
+            <div class="col mb-5">
+                <div class="card h-100">
+                    <div class="card-body p-4">
+                        <div class="text-center">
+                            <h5 class="fw-bolder">
+                                {{ city.name }}
+                            </h5>
+                            <p class="mt-5">temp - {{ city.temp }} &deg;C</p>
+                            <p>wind - {{city.wind }} m/s</p>
+                            <p>weather - {{city.weather}}</p>
+                            <p>country - {{city.country}}</p>
+                        </div>
+                    </div>
+                    <!-- Product actions-->
+                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                        <div class="text-center">
+                            <a class="btn btn-outline-dark mt-auto" href="{% url 'details:city-detail' pk=city.pk %}">View options</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+<nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center my-4">
+                <div class="custom-shadow d-flex">
+                    <li class="page-item {% if not cities.has_previous %}disabled{% endif %}">
+                        <a class="page-link" href="{% if cities.has_previous %}?page={{ cities.previous_page_number }}{{ else }}
+                        #
+                        {% endif %}">Previous</a>
+                    </li>
+                    {% for page in cities.paginator.page_range %}
+                    {% if page >= cities.number|add:-2 and page <= cities.number|add:+2 %}
+                    <li class="page-item {% if cities.number == page %} active {% endif %}">
+                        <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not cities.has_next %}disabled{% endif %}">
+                        <a class="page-link" href="{% if cities.has_next %}?page={{ cities.next_page_number }}{{ else }}
+                        #
+                        {% endif %}">Next</a>
+                    </li>
+                </div>
+            </ul>
+        </nav>
+    </div>
+</section>
+</body>
+</html>

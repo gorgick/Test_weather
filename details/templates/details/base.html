@@ -1,0 +1,93 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'details:cities' %}"><strong>All Cities</strong></a>
+    </div>
+</nav>
+<div class="container mt-5">
+    <h3>Input your sity:</h3>
+    <div class="input-group input-group-lg mt-5 mb-5">
+        <span class="input-group-text" id="inputGroup-sizing-lg">Large</span>
+        <input type="text" class="form-control city-add" id="add-city" aria-label="Sizing example input"
+               aria-describedby="inputGroup-sizing-lg">
+    </div>
+    <button type="button" id="add-button" value="1"
+            class="btn btn-secondary">
+        add city weather
+    </button>
+</div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://unpkg.com/htmx.org@1.9.9"
+        integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX"
+        crossorigin="anonymous"></script>
+<script>
+    $('#add-button').click(function(e){
+        e.preventDefault();
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "details:add-city" %}',
+            data: {
+                product_id: $(this).val(),
+                city_name: $('#add-city').val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post'
+            },
+            success: function (response) {
+                console.log(response)
+                $('.container').before(`<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <h3>${response.city}</h3>
+        </div>
+        <div class="col-md-8">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Descripton</th>
+                    <th scope="col">Data</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Country</td>
+                    <td>${response.country}</td>
+                </tr>
+                <tr>
+                    <td>Temperature</td>
+                    <td>${response.temp} &deg;C</td>
+                </tr>
+                <tr>
+                    <td>Wind</td>
+                    <td>${response.wind} m/s</td>
+                </tr>
+                <tr>
+                    <td>Weather</td>
+                    <td>${response.weather}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>`);
+
+                //                location.reload()
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        })
+    });
+</script>
+</html>
